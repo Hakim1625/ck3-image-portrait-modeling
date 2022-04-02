@@ -23,7 +23,7 @@ import torch
 import torch.nn as nn
 from itertools import combinations, combinations_with_replacement
 from torchvision import datasets, transforms, models, utils
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 class portraits_dataset(Dataset):
     def __init__(self, image_tensors, slider_tensors):
         self.inputs = image_tensors
@@ -114,9 +114,14 @@ root_2 = 'C:/Users/hakim/Dropbox/CK3/Data'
 def main():
 
     dnas = [dna[0] for dna in datasets.DatasetFolder(root_2, loader=dna_to_array, extensions=('txt'))]
-    images = datasets.ImageFolder(root, transform=transforms.ToTensor)
+    images = datasets.ImageFolder(root, transform=transforms.ToTensor())
 
-    print(dnas)
+
+    
+    torch.save(dnas, 'dataset_dna')
+    torch.save(images, 'dataset_images')
+    
+
 
     #x = [images[i] for i in range(10)]
     
@@ -126,7 +131,13 @@ def main():
     #dump('datasets/dataset.pkl', [inputs, targets])
     
 
+def main2():
+    dna = torch.load('dataset_dna')
+    images = torch.load('dataset_images')
+
+    print(len(images))
+    
 
 if __name__ == "__main__":
-    main()
+    main2()
 
