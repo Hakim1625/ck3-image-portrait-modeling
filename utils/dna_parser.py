@@ -1,4 +1,3 @@
-<<<<<<< HEAD:utils/dna_parser.py
 import re
 import json
 import torch
@@ -142,7 +141,7 @@ def main():
 
 if __name__ == "__main__":
     main()
-=======
+
 import re
 import json
 import torch
@@ -286,4 +285,3 @@ def main():
 
 if __name__ == "__main__":
     main()
->>>>>>> e73ee6a8ef07329c80864683f340415795dd5009:dna_parser.py
