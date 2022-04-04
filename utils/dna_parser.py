@@ -2,11 +2,12 @@ import re
 import json
 import torch
 
-f = open('gene_dicts.json')
+f = open('./utils/gene_dicts.json')
 genes, non_simple_genes = json.load(f)
 f.close()
 
 def get_index(value, length):
+    print(value, length)
     l = length
     for i in range(l):
         if int(value) <= 255-(2*i*255/l) and int(value) >= 255-(2*(i+1)*255/l):
@@ -70,7 +71,7 @@ def array_to_dna(array, path):
 
     get_age = lambda x: (float(x)+255)/510
 
-    with open('default_dna.txt', 'r') as f1, open(path, 'w') as f2:
+    with open('./utils/default_dna.txt', 'r') as f1, open(path, 'w') as f2:
         new_lines=[]
         lines = f1.readlines()
         

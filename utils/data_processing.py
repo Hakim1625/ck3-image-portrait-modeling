@@ -23,7 +23,7 @@ import torch
 import torch.nn as nn
 from itertools import combinations, combinations_with_replacement
 from torchvision import datasets, transforms, models, utils
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 class portraits_dataset(Dataset):
     def __init__(self, image_tensors, slider_tensors):
         self.inputs = image_tensors
@@ -108,7 +108,7 @@ def process_image_dataset():
 
 
 
-from dna_parser import dna_to_array
+from utils.dna_parser import dna_to_array
 root = 'C:/Users/hakim/Dropbox/CK3/Portraits'
 root_2 = 'C:/Users/hakim/Dropbox/CK3/Data'
 def main():
