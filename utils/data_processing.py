@@ -17,8 +17,6 @@ from PIL import Image
 def load_img(path):
     return Image.open(path)
 
-
-
 import torch
 import torch.nn as nn
 from itertools import combinations, combinations_with_replacement
