@@ -41,10 +41,10 @@ def dna_to_array(path):
                         new_genes.update({'age': get_age(get_value(line, expression=r'\d+.\d+'))})
                     else:
                         if gene == 'type':
-                            if "male" in line:
-                                new_genes.update({'gender': -255})
-                            else:
+                            if "female" in line:
                                 new_genes.update({'gender': 255})
+                            else:
+                                new_genes.update({'gender': -255})
                         else:
                             if gene == 'skin_color':
                                 new_genes.update({'skincolor_light':re.findall(p_value, lines[4])[0], 'skincolor_dark':re.findall(p_value, lines[4])[1]})

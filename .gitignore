@@ -1,2 +1,6 @@
 *.code-workspace
 checkpoints/
+dataset/
+predictions/
+lightning_logs/
+predict_images/

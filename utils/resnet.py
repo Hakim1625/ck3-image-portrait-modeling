@@ -16,14 +16,13 @@ class block(pl.LightningModule):
         self.bn2 = nn.BatchNorm2d(intermediate_channels)
         self.conv3 = nn.Conv2d(intermediate_channels, intermediate_channels * self.expansion, kernel_size=1, stride=1, padding=0, bias=False)
         self.bn3 = nn.BatchNorm2d(intermediate_channels * self.expansion)
-        self.relu = nn.ELU()
+        self.relu = nn.ReLU()
         self.identity_downsample = identity_downsample
         self.stride = stride
 
         init(self.conv1.weight)
         init(self.conv2.weight)
         init(self.conv3.weight)
-    
     def forward(self, x):
         identity = x.clone()
 
@@ -50,7 +49,7 @@ class ResNet(pl.LightningModule):
         self.in_channels = 64
         self.conv1 = nn.Conv2d(image_channels, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
-        self.relu = nn.ELU()
+        self.relu = nn.ReLU()
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
 
         self.layer1 = self._make_layer(block, layers[0], intermediate_channels=64, stride=1)
