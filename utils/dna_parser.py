@@ -25,7 +25,8 @@ def dna_to_array(path):
         new_genes = {} 
 
         get_age = lambda y: (510*float(y))-255
-
+        get_skincolor = lambda y: (2*float(y))+255 
+        
         for line in lines:
             if re.search(p_gene, line) != None:
                 gene = get_gene(line)
@@ -39,22 +40,17 @@ def dna_to_array(path):
                 else:
                     if gene == 'age':
                         new_genes.update({'age': get_age(get_value(line, expression=r'\d+.\d+'))})
+
                     else:
-                        if gene == 'type':
-                            if "female" in line:
-                                new_genes.update({'gender': 255})
-                            else:
-                                new_genes.update({'gender': -255})
+                        if gene == 'skin_color':
+                            new_genes.update({'skincolor_light':get_skincolor(re.findall(p_value, lines[4])[0]), 'skincolor_dark':get_skincolor(re.findall(p_value, lines[4])[1])})
                         else:
-                            if gene == 'skin_color':
-                                new_genes.update({'skincolor_light':re.findall(p_value, lines[4])[0], 'skincolor_dark':re.findall(p_value, lines[4])[1]})
-                            else:
-                                if gene in genes.keys():
-                                    value = get_value(line)
-                                    if 'neg' in new_genes:  
-                                        new_genes.update({gene: int(value)*-1})
-                                    else:
-                                        new_genes.update({gene: int(value)})
+                            if gene in genes.keys():
+                                value = get_value(line)
+                                if 'neg' in new_genes:  
+                                    new_genes.update({gene: int(value)*-1})
+                                else:
+                                    new_genes.update({gene: int(value)})
     return torch.tensor([float(v) for v in new_genes.values()])
     
 
@@ -70,6 +66,7 @@ def array_to_dna(array, path):
     get_value = lambda line, expression=p_value: re.search(expression, line).group()
 
     get_age = lambda x: (float(x)+255)/510
+    get_skincolor = lambda x: (x+255)/2
 
     with open('./utils/default_dna.txt', 'r') as f1, open(path, 'w') as f2:
         new_lines=[]
@@ -93,7 +90,7 @@ def array_to_dna(array, path):
                         if 'skin_color' in line:
                             substring = re.findall(r'\b(\d+\s\d+)\b', subline)[0]
                    
-                            subline = subline.replace(substring, '{} {} '.format(predicted_genes['skincolor_light'], predicted_genes['skincolor_dark']))
+                            subline = subline.replace(substring, '{} {} '.format(get_skincolor(predicted_genes['skincolor_light']), get_skincolor(predicted_genes['skincolor_dark'])))
 
                             new_lines.append(subline)
                         else:

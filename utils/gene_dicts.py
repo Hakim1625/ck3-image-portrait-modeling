@@ -1,7 +1,6 @@
 import json
 
 dicts = [{
-		'gender':0,
 		'age':0,
 		'skincolor_light':0,
 		'skincolor_dark':0,

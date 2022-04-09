@@ -4,3 +4,4 @@ dataset/
 predictions/
 lightning_logs/
 predict_images/
+*.pth

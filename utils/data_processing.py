@@ -112,21 +112,12 @@ root_2 = 'C:/Users/hakim/Dropbox/CK3/Data'
 def main():
 
     dnas = [dna[0] for dna in datasets.DatasetFolder(root_2, loader=dna_to_array, extensions=('txt'))]
-    images = datasets.ImageFolder(root, transform=transforms.ToTensor())
+    #images = datasets.ImageFolder(root, transform=transforms.ToTensor())
 
 
     
     torch.save(dnas, 'dataset_dna')
-    torch.save(images, 'dataset_images')
-    
-
-
-    #x = [images[i] for i in range(10)]
-    
-    #inputs = [tensor for (tensor, _) in images]
-    #targets = [tensor for (tensor, _) in dna_files]
-
-    #dump('datasets/dataset.pkl', [inputs, targets])
+    #torch.save(images, 'dataset_images')
     
 
 def main2():
@@ -137,5 +128,5 @@ def main2():
     
 
 if __name__ == "__main__":
-    main2()
+    main()
 
