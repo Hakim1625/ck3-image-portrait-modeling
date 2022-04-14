@@ -9,7 +9,8 @@ import os
 import shutil 
 
 def zip_processing(dataset_name):
-    os.system(f'sudo apt install unzip')
+    os.system('pip install -r requirements.txt')
+    os.system('sudo apt install unzip')
     os.system(f'unzip ~/datastores/{dataset_name}/{dataset_name}.zip -d ./')
 
 def clean_dataset(path='C:/Users/hakim/Dropbox/CK3/Data'):
