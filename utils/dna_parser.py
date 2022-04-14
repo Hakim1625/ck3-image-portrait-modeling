@@ -2,7 +2,7 @@ import re
 import json
 import torch
 
-f = open('./utils/gene_dicts.json')
+f = open('./utils/dependencies/gene_dicts.json')
 genes, non_simple_genes = json.load(f)
 f.close()
 
@@ -57,9 +57,6 @@ def dna_to_array(path):
 
 def array_to_dna(array, path):
     predicted_genes = dict(zip(list(genes.keys()), array.numpy().astype(int)))
-    #[print(item) for item in predicted_genes.items()]
-    #[print(item) for item in non_simple_genes.items()]
-    
 
     p_gene, p_sub_gene, p_value = r'(?:\t)\w+', r'"\w+"', r'\b\d+'
     get_gene = lambda line, expression=p_gene: re.search(expression, line).group()[1:]
@@ -68,7 +65,7 @@ def array_to_dna(array, path):
     get_age = lambda x: (float(x)+255)/510
     get_skincolor = lambda x: (x+255)/2
 
-    with open('./utils/default_dna.txt', 'r') as f1, open(path, 'w') as f2:
+    with open('./utils/dependencies/default_dna.txt', 'r') as f1, open(path, 'w') as f2:
         new_lines=[]
         lines = f1.readlines()
         
@@ -122,20 +119,4 @@ def array_to_dna(array, path):
         f1.close()
         f2.writelines(new_lines)
         f2.close()
-
-def main():
-    array = torch.randn(101).uniform_(-255, 255)
-    array_to_dna(array, 'dna.txt')
-    
-
-    #get_index(-255, 3)
-    
-    #get_index(-85, 3)
-    
-    #get_index(84, 3)
-    
-    #get_index(255, 3)
-
-if __name__ == "__main__":
-    main()
 

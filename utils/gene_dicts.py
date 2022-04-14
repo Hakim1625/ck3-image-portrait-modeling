@@ -129,6 +129,6 @@ dicts[0] = { key:0 for key in dicts[0].keys()}
 print(len(dicts[0].keys()))
 json = json.dumps(dicts)
 
-f = open("gene_dicts.json","w")
+f = open("./dependencies/gene_dicts.json","w")
 f.write(json)
 f.close()
