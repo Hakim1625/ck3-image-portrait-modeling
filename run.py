@@ -7,8 +7,8 @@ import os
 def main(model):
     opt = get_options()
 
-    if not os.path.exists(opt.dataset):
-        zip_processing(opt.dataset)
+    if not os.path.exists(opt.datastore_name):
+        zip_processing(opt.datastore_name)
 
 
     experiment = trainning.experiment(model, opt)
