@@ -11,4 +11,4 @@ def get_options():
     parser.add_argument('--val_ratio', type=float, default=0.1, help='ratio of the validation set, default=0.1')
     parser.add_argument('--gpus', type=int, default=1, help='number of GPUs to use')
     parser.add_argument('--ckpt', type=str, help='path to checkpoint')
-    return parser.parse_args()
+    return parser.parse_known_args()

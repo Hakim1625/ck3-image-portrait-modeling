@@ -3,11 +3,11 @@
 
 # In[ ]:
 
-
+from utils.data_processing import transform
 from pytorch_lightning import Trainer, LightningDataModule, LightningModule
 
 from torch.utils.data import random_split, DataLoader, Dataset
-from torchvision import datasets, transforms
+from torchvision import datasets
 import torch.nn.functional as F
 import torch
 
@@ -17,7 +17,7 @@ import torch
 
 class dataset(Dataset):
     def __init__(self, dataset_path):
-        self.images = datasets.ImageFolder(root=f'./{dataset_path}/portraits/', transform=transforms.ToTensor()) 
+        self.images = datasets.ImageFolder(root=f'./{dataset_path}/portraits/', transform=transform) 
         self.dnas = torch.load(f'./{dataset_path}/tensors/dnas.pt')
         self.genders = torch.load(f'./{dataset_path}/tensors/genders.pt')
         self.n_samples = len(self.images) 

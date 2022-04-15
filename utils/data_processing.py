@@ -1,17 +1,21 @@
 from PIL import Image
+import zipfile
 
 def load_img(path):
     return Image.open(path)
 
-from torchvision import transforms, datasets
+from torchvision import transforms
+
+def transform(image):
+    return transforms.ToTensor()(image)/255
 
 import os
 import shutil 
 
 def zip_processing(dataset_name):
-    os.system('pip install -r requirements.txt')
-    os.system('sudo apt install unzip')
-    os.system(f'unzip ~/datastores/{dataset_name}/{dataset_name}.zip -d ./')
+    with zipfile.ZipFile(f'/datastores/{dataset_name}/{dataset_name}.zip', 'r') as zip_ref:
+        zip_ref.extractall('./')
+
 
 def clean_dataset(path='C:/Users/hakim/Dropbox/CK3/Data'):
     scan = os.listdir(path)
@@ -30,9 +34,9 @@ def get_dataset_paths(path, extension='jpg'):
 
     return imgs
 
-import utils.deepface as deepface
 
 def create_align_dataset(path, images):
+    import utils.deepface as deepface   
 
     parameters = deepface.parameters
 

@@ -1,11 +1,12 @@
 from utils.data_processing import zip_processing
 from utils.arparse import get_options
 import utils.resnet as resnet
-import trainning
+import utils.trainning as trainning
+from utils.model import Regressor
 import os
 
 def main(model):
-    opt = get_options()
+    opt, _ = get_options()
 
     if not os.path.exists(opt.datastore_name):
         zip_processing(opt.datastore_name)
@@ -17,4 +18,4 @@ def main(model):
 
 
 if __name__ == '__main__':
-    main(resnet.ResNet50(3, 100))
+    main(Regressor(3, 100))
