@@ -20,8 +20,7 @@ class block(pl.LightningModule):
         self.identity_downsample = identity_downsample
         self.stride = stride
 
-        self.Elu = nn.ELU()
-        self.dropout = nn.Dropout(p=0.15)
+        self.activation = nn.ReLU()
 
         init(self.conv1.weight)
         init(self.conv2.weight)
@@ -32,10 +31,10 @@ class block(pl.LightningModule):
 
         x = self.conv1(x)
         x = self.bn1(x)
-        x = self.Elu(x)
+        x = self.activation(x)
         x = self.conv2(x)
         x = self.bn2(x)
-        x = self.Elu(x)
+        x = self.activation(x)
         x = self.conv3(x)
         x = self.bn3(x)
 
@@ -44,8 +43,7 @@ class block(pl.LightningModule):
 
         x += identity
 
-        x = self.dropout(x)
-        x = self.Elu(x)
+        x = self.activation(x)
 
         return x
 
@@ -56,8 +54,7 @@ class l_block(pl.LightningModule):
         self.l2 = nn.Linear(in_channels, in_channels)
         self.l3 = nn.Linear(in_channels, out_channels)
 
-        self.Elu = nn.ELU()
-        self.dropout = nn.Dropout(p=0.15)
+        self.activation = nn.ReLU()
 
         init(self.l1.weight)
         init(self.l2.weight)
@@ -65,18 +62,18 @@ class l_block(pl.LightningModule):
 
     def forward(self, x):
         x1 = self.l1(x)
-        x1 = self.Elu(x)
+        x1 = self.activation(x)
         x2 = self.l2(x1)
-        x2 = self.Elu(x2)
+        x2 = self.activation(x2)
         x3 = self.l3(x1 + x2)
-        x3 = self.dropout(x3)
-        x3 = self.Elu(x3)
+        x3 = self.activation(x3)
 
         return x3
 
 class ResNet(pl.LightningModule):
     def __init__(self, block, layers, image_channels, num_features):
         super(ResNet, self).__init__()
+        self.example_input_array=torch.randn(1, 3, 244, 244)
         self.in_channels = 64
         
         self.conv1 = nn.Conv2d(image_channels, 64, kernel_size=7, stride=2, padding=3, bias=False)
@@ -90,14 +87,19 @@ class ResNet(pl.LightningModule):
         self.layer4 = self._make_layer(block, layers[3], intermediate_channels=512, stride=2)
 
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.linear = nn.Linear(in_features=(512 * 4), out_features=100)
-        self.out = nn.Tanh()
-    
+
+        self.gender = l_block(2, 6000)
+        self.regressor = nn.Linear(in_features=(512 * 4)+6000, out_features=100)
+
+
+
+
+
 
         init(self.conv1.weight)
-        init(self.linear.weight)
+        init(self.regressor.weight)
 
-    def forward(self, image):
+    def forward(self, image, gender):
         x = self.conv1(image)
         x = self.bn1(x)
         x = self.Elu(x)
@@ -106,14 +108,15 @@ class ResNet(pl.LightningModule):
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
-
         x = self.avgpool(x)
         x = torch.flatten(x, start_dim=1)
-        x = self.linear(x)
-        x = self.out(x)
-        x = x*265
 
-        return x
+        y = self.gender(gender)
+
+        z = torch.cat((x, y), dim=1)
+        z = self.regressor(z)
+
+        return z
 
     def _make_layer(self, block, num_residual_blocks, intermediate_channels, stride):
         identity_downsample = None

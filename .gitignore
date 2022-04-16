@@ -4,4 +4,6 @@ dataset/
 predictions/
 lightning_logs/
 predict_images/
+portraits_align/
 *.pth
+*.ipynb

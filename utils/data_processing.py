@@ -13,8 +13,11 @@ import os
 import shutil 
 
 def zip_processing(dataset_name):
-    with zipfile.ZipFile(f'/datastores/{dataset_name}/{dataset_name}.zip', 'r') as zip_ref:
-        zip_ref.extractall('./')
+    try:
+        with zipfile.ZipFile(f'/datastores/{dataset_name}/{dataset_name}.zip', 'r') as zip_ref:
+            zip_ref.extractall('./')
+    except:
+        None
 
 
 def clean_dataset(path='C:/Users/hakim/Dropbox/CK3/Data'):
