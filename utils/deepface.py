@@ -27,7 +27,7 @@ def face_analysis(img_path, actions):
     return DeepFace.analyze(img_path = img_path, actions = actions)
 
 def face_features(img_path, model):
-    return DeepFace.represent(img_path = img_path, model_name = model)
+    return DeepFace.represent(img_path = img_path, model_name = model, enforce_detection=False)
 
 
 # In[11]:

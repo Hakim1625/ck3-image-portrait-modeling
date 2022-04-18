@@ -84,3 +84,6 @@ def process_screenshot_dataset(input_path, output_path):
     create_align_dataset(output_path, images)
 
     save_tensors(input_path, output_path)
+
+
+    

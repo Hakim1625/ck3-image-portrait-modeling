@@ -66,7 +66,7 @@ class Regressor(LightningModule):
 
 
         self.regressor = nn.Sequential(
-            nn.Linear(dim, 100),
+            nn.Linear(dim, num_features),
         )
 
         self.out =  nn.Tanh()

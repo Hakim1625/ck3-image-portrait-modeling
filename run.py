@@ -18,4 +18,4 @@ def main(model):
 
 
 if __name__ == '__main__':
-    main(Regressor(3, 100))
+    main(Regressor(3, 98))

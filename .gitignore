@@ -1,9 +1,14 @@
-*.code-workspace
+
 checkpoints/
+benchmark/
 dataset/
 predictions/
 lightning_logs/
 predict_images/
 portraits_align/
+portraits/
+
+*.code-workspace
 *.pth
 *.ipynb
+*.zip

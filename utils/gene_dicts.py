@@ -2,8 +2,6 @@ import json
 
 dicts = [{
 		'age':0,
-		'skincolor_light':0,
-		'skincolor_dark':0,
  		'gene_chin_forward':0,
  		'gene_chin_height':0,
  		'gene_chin_width':0,
@@ -92,7 +90,6 @@ dicts = [{
  		'expression_forehead_wrinkles':0,
  		'expression_other':0,
  		'complexion':0,
- 		'gene_height':0,
  		'gene_bs_body_type':0,
  		'gene_bs_body_shape':0,
  		'gene_age':0,
@@ -129,6 +126,6 @@ dicts[0] = { key:0 for key in dicts[0].keys()}
 print(len(dicts[0].keys()))
 json = json.dumps(dicts)
 
-f = open("./dependencies/gene_dicts.json","w")
+f = open("./utils/dependencies/gene_dicts.json","w")
 f.write(json)
 f.close()

@@ -40,17 +40,13 @@ def dna_to_array(path):
                 else:
                     if gene == 'age':
                         new_genes.update({'age': get_age(get_value(line, expression=r'\d+.\d+'))})
-
                     else:
-                        if gene == 'skin_color':
-                            new_genes.update({'skincolor_light':get_skincolor(re.findall(p_value, lines[4])[0]), 'skincolor_dark':get_skincolor(re.findall(p_value, lines[4])[1])})
-                        else:
-                            if gene in genes.keys():
-                                value = get_value(line)
-                                if 'neg' in new_genes:  
-                                    new_genes.update({gene: int(value)*-1})
-                                else:
-                                    new_genes.update({gene: int(value)})
+                        if gene in genes.keys():
+                            value = get_value(line)
+                            if 'neg' in new_genes:  
+                                new_genes.update({gene: int(value)*-1})
+                            else:
+                                new_genes.update({gene: int(value)})
     return torch.tensor([float(v) for v in new_genes.values()])
     
 
@@ -84,35 +80,28 @@ def array_to_dna(array, path):
                         else:
                             new_lines.append(line.replace(re.search(r'=\w+', line).group()[1:], 'male'))
                     else:
-                        if 'skin_color' in line:
-                            substring = re.findall(r'\b(\d+\s\d+)\b', subline)[0]
-                   
-                            subline = subline.replace(substring, '{} {} '.format(get_skincolor(predicted_genes['skincolor_light']), get_skincolor(predicted_genes['skincolor_dark'])))
-
-                            new_lines.append(subline)
+                        if gene in non_simple_genes.keys():
+                                value =  predicted_genes[gene]
+                                length = len(non_simple_genes[gene])
+                                index = get_index(value, length)
+                                sub_gene = non_simple_genes[gene][index]
+                                new_value = length*(value+255)-(510*(index))-255
+                                #print(gene, sub_gene, length, index, value, new_value)
+                                for substring in re.findall(r'"\w+"\s\d+', line):
+                                    subline = subline.replace(substring, '"{}" {}'.format(sub_gene, new_value))
+                                new_lines.append(subline)
                         else:
-                            if gene in non_simple_genes.keys():
-                                    value =  predicted_genes[gene]
-                                    length = len(non_simple_genes[gene])
-                                    index = get_index(value, length)
-                                    sub_gene = non_simple_genes[gene][index]
-                                    new_value = length*(value+255)-(510*(index))-255
-                                    #print(gene, sub_gene, length, index, value, new_value)
+                            if gene in genes.keys():
+                                if float(predicted_genes[gene]) > 0:
                                     for substring in re.findall(r'"\w+"\s\d+', line):
-                                        subline = subline.replace(substring, '"{}" {}'.format(sub_gene, new_value))
+                                        subline = subline.replace(substring, '{}pos" {}'.format(re.search(r'"\w+_', line)[0], predicted_genes[gene]))
+                                    new_lines.append(subline)
+                                else:
+                                    for substring in re.findall(r'"\w+"\s\d+', line):
+                                        subline= subline.replace(substring, '{}neg" {}'.format(re.search(r'"\w+_', line)[0], predicted_genes[gene]*-1))
                                     new_lines.append(subline)
                             else:
-                                if gene in genes.keys():
-                                    if float(predicted_genes[gene]) > 0:
-                                        for substring in re.findall(r'"\w+"\s\d+', line):
-                                            subline = subline.replace(substring, '{}pos" {}'.format(re.search(r'"\w+_', line)[0], predicted_genes[gene]))
-                                        new_lines.append(subline)
-                                    else:
-                                        for substring in re.findall(r'"\w+"\s\d+', line):
-                                            subline= subline.replace(substring, '{}neg" {}'.format(re.search(r'"\w+_', line)[0], predicted_genes[gene]*-1))
-                                        new_lines.append(subline)
-                                else:
-                                    new_lines.append(line)
+                                new_lines.append(line)
             else:
                 new_lines.append(line)
 
