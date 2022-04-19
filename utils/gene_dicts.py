@@ -94,7 +94,7 @@ genes = {'complexion': ["complexion_1", "complexion_2", "complexion_3", "complex
 'gene_forehead_width': ['forehead_width_neg', 'forehead_width_pos'],
 'gene_forehead_height': ['forehead_height_neg', 'forehead_height_pos'],
 'gene_head_height': ['head_height_neg', 'head_height_pos'],
-'gene_head_width': ['gene_head_width_neg', 'gene_head_width_pos'],
+'gene_head_width': ['head_width_neg', 'head_width_pos'],
 'gene_head_profile': ['head_profile_neg', 'head_profile_pos'],
 'gene_head_top_height': ['head_top_height_neg', 'head_top_height_pos'],
 'gene_head_top_width': ['head_top_width_neg', 'head_top_width_pos'],
