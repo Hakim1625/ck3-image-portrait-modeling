@@ -11,12 +11,18 @@ import time
 # In[2]:
 
 
-generator = macro.dataset_generator(3, './portraits')
+
 
 
 # In[ ]:
 
 
 time.sleep(3)
-generator._generate_dataset()
+
+
+n_cycles = 1
+
+for n in range(n_cycles):
+    generator = macro.dataset_generator(3, './datasets')
+    generator._generate_dataset(n)
 

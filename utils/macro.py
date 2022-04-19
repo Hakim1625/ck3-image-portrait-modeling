@@ -88,10 +88,10 @@ class dataset_generator():
              'slider_bounds': (190, 380),
              'gene_open': (280, 510),
              'gene_select': (320, 540),
-             'dna_copy_male': (900, 180),
-             'dna_copy_female': (1430, 180),
-             'dna_copy_boy': (900, 690), 
-             'dna_copy_girl': (1430, 690),
+             'dna_copy_male': (900, 210),
+             'dna_copy_female': (1430, 210),
+             'dna_copy_boy': (900, 725), 
+             'dna_copy_girl': (1430, 725),
              'dna_paste': (1650, 150),
              'randomize_template': (285, 225),
              'upper_region': (180, 295, 225, 20),
@@ -112,14 +112,16 @@ class dataset_generator():
         self.archetype_size = archetype_size
     
 
-        self._generate_archetypes()
+        
 
         auto.PAUSE = dataset_generator.pause
+        auto.FAILSAFE = True
 
 
     
 
     def _generate_archetypes(self):
+        del self.archetypes[:]
         for ethnicity in dataset_generator.ethnicities:
             self.archetypes.append({'ethnicity': ethnicity,
                                     'age': normal_distribution(25, 10, 14, 70),
@@ -241,6 +243,7 @@ class dataset_generator():
         if age < 16: 
             if gender == 'male':
                 x, y = dataset_generator.landmarks['dna_copy_boy']
+
                 auto.click(x, y)
                 auto.click(x, y)
 
@@ -249,6 +252,7 @@ class dataset_generator():
                 
             else:
                 x, y = dataset_generator.landmarks['dna_copy_girl']
+
                 auto.click(x, y)
                 auto.click(x, y)
 
@@ -257,6 +261,7 @@ class dataset_generator():
         else:
             if gender == 'male':
                 x, y = dataset_generator.landmarks['dna_copy_male']
+
                 auto.click(x, y)
                 auto.click(x, y)
 
@@ -264,6 +269,7 @@ class dataset_generator():
                 write(path, dna)
             else:
                 x, y = dataset_generator.landmarks['dna_copy_female']
+
                 auto.click(x, y)
                 auto.click(x, y)
 
@@ -291,16 +297,23 @@ class dataset_generator():
                 os.makedirs(newpath)
             self._turn(newpath, archetype['age'])
 
-    def _generate_dataset(self):
+    def _generate_dataset(self, n=0):
+        self._generate_archetypes()
+
         if not os.path.exists(self.path):
                 os.makedirs(self.path)
 
-        for n, archetype in enumerate(self.archetypes):
-            self._batch(archetype, self.path, n)
+        path = f'{self.path}/portrait{n}'
+
+        if not os.path.exists(path):
+                os.makedirs(path)
+
+        for i, archetype in enumerate(self.archetypes):
+            self._batch(archetype, path, i)
 
 
 if __name__ == '__main__':
-    None
+    debug_mouse_position()
 
 
 

@@ -2,6 +2,7 @@
 checkpoints/
 benchmark/
 dataset/
+datasets/
 predictions/
 lightning_logs/
 predict_images/
