@@ -6,48 +6,18 @@ f = open('./utils/dependencies/gene_dicts.json')
 genes, non_simple_genes = json.load(f)
 f.close()
 
-def get_index(value, length):
-    print(value, length)
-    l = length
-    for i in range(l):
-        if int(value) <= 255-(2*i*255/l) and int(value) >= 255-(2*(i+1)*255/l):
-            #print(value, l-i-1)
-            return l-i-1
-
 def dna_to_array(path):
     with open(path, "r") as f:
         lines = f.readlines()
+        new_genes = {} 
 
         p_gene, p_sub_gene, p_value = r'(?:\t)\w+', r'"\w+"', r'\b\d+'
         get_gene = lambda line, expression=p_gene: re.search(expression, line).group()[1:]
         get_sub_gene = lambda line, expression=p_sub_gene: re.search(expression, line).group()[1:-1]
         get_value = lambda line, expression=p_value: re.search(expression, line).group()
-        new_genes = {} 
-
-        get_age = lambda y: (510*float(y))-255
-        get_skincolor = lambda y: (2*float(y))+255 
         
-        for line in lines:
-            if re.search(p_gene, line) != None:
-                gene = get_gene(line)
-                if gene in non_simple_genes.keys():
-                    sub_gene = get_sub_gene(line)
-                    value = get_value(line)
-                    i = non_simple_genes.get(gene).index(sub_gene)
-                    n = len(non_simple_genes.get(gene))
-                    new_value =  -255 + ((510/n)*(i+((float(value)+255)/510)))
-                    new_genes.update({gene: new_value})
-                else:
-                    if gene == 'age':
-                        new_genes.update({'age': get_age(get_value(line, expression=r'\d+.\d+'))})
-                    else:
-                        if gene in genes.keys():
-                            value = get_value(line)
-                            if 'neg' in new_genes:  
-                                new_genes.update({gene: int(value)*-1})
-                            else:
-                                new_genes.update({gene: int(value)})
-    return torch.tensor([float(v) for v in new_genes.values()])
+
+
     
 
 
