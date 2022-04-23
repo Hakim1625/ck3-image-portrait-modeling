@@ -10,8 +10,8 @@ from deepface import DeepFace
 # In[9]:
 
 
-parameters = {'model': 'Facenet',
-              'backend': 'dlib',
+parameters = {'model': 'VGG-Face',
+              'backend': 'mtcnn',
               'actions': ['gender', 'age'],
               'size': (224, 224)
             }
@@ -20,14 +20,14 @@ parameters = {'model': 'Facenet',
 # In[10]:
 
 
-def face_detect(img_path, size, backend):
-    return DeepFace.detectFace(img_path = img_path, target_size = size, detector_backend = backend)
+def face_detect(img_path):
+    return DeepFace.detectFace(img_path = img_path, target_size = parameters['size'], detector_backend = parameters['backend'])
 
-def face_analysis(img_path, actions):
-    return DeepFace.analyze(img_path = img_path, actions = actions)
+def face_analysis(img_path):
+    return DeepFace.analyze(img_path = img_path, actions = parameters['actions'])
 
-def face_features(img_path, model):
-    return DeepFace.represent(img_path = img_path, model_name = model, enforce_detection=False)
+def face_features(img_path):
+    return DeepFace.represent(img_path = img_path, model_name = parameters['model'])
 
 
 # In[11]:
@@ -37,10 +37,3 @@ from torchvision import transforms
 
 
 # In[12]:
-
-
-def face_detect_img(input_img_path, output_img_path, size, backend):
-    tensor = transforms.ToTensor()(face_detect(input_img_path, size, backend).copy())
-    image = transforms.ToPILImage()(tensor)
-    image.save(output_img_path, 'PNG')
-

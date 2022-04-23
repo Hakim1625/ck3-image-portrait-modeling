@@ -6,8 +6,10 @@ datasets/
 predictions/
 lightning_logs/
 predict_images/
+portraits_embeddings/
 portraits_align/
 portraits/
+logs/
 
 *.code-workspace
 *.pth

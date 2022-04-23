@@ -1,5 +1,8 @@
+from utils.gene_dicts import get_lengths
+
 from pytorch_lightning import LightningModule
-from torch import nn
+
+from torch import batch_norm, nn
 import torch
 
 
@@ -19,7 +22,7 @@ class conv_block(LightningModule):
         else:
             self.pool = nn.MaxPool2d(kernel_size=3)
 
-        self.activation = nn.ReLU()
+        self.activation = nn.ELU()
 
     def forward(self, x):
         x = self.conv_1(x)
@@ -38,57 +41,59 @@ class conv_block(LightningModule):
 
         return x
 
+class res_block(LightningModule):
+    def __init__(self, in_channels, out_channels):
+        super(res_block, self).__init__()
+        self.l1 = nn.Linear(in_channels, in_channels)
+        self.l2 = nn.Linear(in_channels, out_channels)
+        self.l3 = nn.Linear(out_channels, out_channels)
+        self.l4 = nn.Linear(out_channels, out_channels)
+
+        self.bn1 = nn.BatchNorm1d(in_channels)
+        self.bn2 = nn.BatchNorm1d(out_channels)
+
+        self.activation = nn.ELU()
+        self.sigmoid = nn.Sigmoid()
+
+
+    def forward(self, x):
+        x_1 = self.l1(x)
+        x_1 = self.bn1(x_1)
+        x_1 = self.activation(x_1)
+
+        x_1 = self.l2(x_1)
+        x_1 = self.bn2(x_1)
+
+        x_2 = self.l3(torch.clone(x_1))
+        x_2 = self.activation(x_2)
+
+        x_2 = self.l4(x_2)
+        x_2 = self.sigmoid(x_2)
+
+        x_3 = x_2 * x_1
+        x_3 = self.activation(x_3)
+
+        return x_3
+
 class Regressor(LightningModule):
-    def __init__(self, image_channels, num_features):
+    def __init__(self, embeddings_size=2622, lengths=get_lengths()):
         super(Regressor, self).__init__()
-    
-
-        self.conv1 = nn.Sequential(
-            conv_block(image_channels, 'avg'),
-        )
-
-        self.conv2 = nn.Sequential(
-            conv_block(image_channels, 'max'),
-        )
-
-        self.gender = nn.Sequential(
-            nn.Linear(2, 2400),
-            nn.ReLU(),
-            nn.Linear(2400, 6000),
-            nn.ReLU()
-
-        )
-
-        self.graph_inputs = [torch.randn(1, 3, 224, 224), torch.randn(1, 2)]
-        dim = torch.flatten(self.conv1(self.graph_inputs[0]), start_dim=1).size()[1]*2 + torch.flatten(self.gender(self.graph_inputs[1]), start_dim=1).size()[1]
-
-        self.example_input_array = self.graph_inputs[0]
-
-
+        
         self.regressor = nn.Sequential(
-            nn.Linear(dim, num_features),
+            res_block(embeddings_size, 1000),
+            res_block(1000, 500),
+            res_block(500, 250),
+            nn.Linear(250, 220),
+            nn.Sigmoid()
         )
 
-        self.out =  nn.Tanh()
+    def forward(self, x):
+        x = self.regressor(x)
+        x =  x*265
+        
+        return x
 
 
-    def forward(self, x, y):
-        y = self.gender(y)
-        y = torch.flatten(y, start_dim=1)
-
-        x_1 = torch.clone(x)
-        x_1 = self.conv1(x_1)
-        x_1 = torch.flatten(x_1, start_dim=1)
-
-        x_2 = torch.clone(x)
-        x_2 = self.conv2(x_2)
-        x_2 = torch.flatten(x_2, start_dim=1)
-
-        x_3 = torch.cat((x_1, x_2), dim=1)
-
-        z = torch.cat((x_3, y), dim=1)
-        z = self.regressor(z)
-  
-
-
-        return z
+if __name__ == '__main__':
+    model = Regressor()
+    

@@ -42,7 +42,6 @@ genes = {'complexion': ["complexion_1", "complexion_2", "complexion_3", "complex
 'gene_bs_forehead_brow_outer_height': ['forehead_brow_outer_height_neg', 'forehead_brow_outer_height_pos'],
 'gene_bs_forehead_brow_width': ['forehead_brow_width_neg', 'forehead_brow_width_pos'],
 
-
 'gene_bs_mouth_lower_lip_def': ['mouth_lower_lip_def_pos'],
 'gene_bs_mouth_lower_lip_full': ['mouth_lower_lip_full_neg', 'mouth_lower_lip_full_pos'],
 'gene_bs_mouth_lower_lip_pad': ['mouth_lower_lip_pad_neg', 'mouth_lower_lip_pad_pos'],
@@ -109,9 +108,13 @@ genes = {'complexion': ["complexion_1", "complexion_2", "complexion_3", "complex
 'gene_eyebrows_shape': ["no_eyebrows",  "avg_spacing_avg_thickness", "avg_spacing_high_thickness", "avg_spacing_low_thickness", "avg_spacing_lower_thickness", "far_spacing_avg_thickness", "far_spacing_high_thickness", "far_spacing_low_thickness", "far_spacing_lower_thickness", "close_spacing_avg_thickness", "close_spacing_high_thickness", "close_spacing_low_thickness", "close_spacing_lower_thickness"],
 }
 
+def get_lengths(genes=genes):
+    return [len(sub_genes) for sub_genes in list(genes.values())]
 
-json = json.dumps(genes)
 
-f = open("./utils/dependencies/gene_dicts.json","w")
-f.write(json)
-f.close()
+if __name__ == '__main__':
+    json = json.dumps(genes)
+
+    f = open("./utils/dependencies/gene_dicts.json","w")
+    f.write(json)
+    f.close()

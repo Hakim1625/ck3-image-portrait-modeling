@@ -17,12 +17,14 @@ import time
 # In[ ]:
 
 
+
+
+
+generator = macro.dataset_generator(3, './datasets')
+n_cycles = 1
 time.sleep(3)
 
-
-n_cycles = 1
-
 for n in range(n_cycles):
-    generator = macro.dataset_generator(3, './datasets')
-    generator._generate_dataset(n)
+    try: generator._generate_dataset(n)
+    except: continue
 

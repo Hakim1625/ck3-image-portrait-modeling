@@ -2,8 +2,6 @@
 # coding: utf-8
 
 # In[ ]:
-
-from utils.data_processing import transform
 from pytorch_lightning import Trainer, LightningDataModule, LightningModule
 from pytorch_lightning.callbacks import EarlyStopping
 from pytorch_lightning.loggers import TensorBoardLogger
@@ -13,6 +11,8 @@ from torchvision import datasets
 import torch.nn.functional as F
 import torch
 
+from utils.dna_parser import dna_ToTensor
+
 
 # In[ ]:
 def get_lr(optimizer):
@@ -21,14 +21,13 @@ def get_lr(optimizer):
 
 class dataset(Dataset):
     def __init__(self, dataset_path):
-        self.images = datasets.ImageFolder(root=f'./{dataset_path}/portraits/', transform=transform) 
-        self.dnas = torch.load(f'./{dataset_path}/tensors/dnas.pt')
-        self.genders = torch.load(f'./{dataset_path}/tensors/genders.pt').float()
+        self.images = datasets.DatasetFolder(root=f'./{dataset_path}/', loader=torch.load, extensions='pt') 
+        self.dnas = datasets.DatasetFolder(root=f'./{dataset_path}/', loader=dna_ToTensor, extensions='txt') 
         self.n_samples = len(self.images) 
 
     def __getitem__(self, index):
         image, i = self.images[index]
-        return image, self.genders[i], self.dnas[i]
+        return image, self.dnas[i][0]
 
     def __len__(self):
         return self.n_samples
@@ -60,9 +59,9 @@ class Net(LightningModule):
     
 
     def training_step(self, batch, batch_idx):
-        images, genders, dnas = batch
+        images, dnas = batch
         
-        predictions = self.model(images, genders)
+        predictions = self.model(images)
 
         loss = self.mse(predictions, dnas)       
         return {'loss': loss}
@@ -75,9 +74,9 @@ class Net(LightningModule):
 
 
     def validation_step(self, batch, batch_idx):
-        images, genders, dnas = batch
+        images, dnas = batch
         
-        predictions = self.model(images, genders)
+        predictions = self.model(images)
 
         loss = self.mse(predictions, dnas)       
         return {'loss': loss}
@@ -146,7 +145,7 @@ class experiment():
                                 gpus=opts.gpus,
                                 max_epochs=opts.epochs,
                                 check_val_every_n_epoch=opts.val_epochs,
-                                logger=TensorBoardLogger("./logs", name='Regressor', default_hp_metric=False, log_graph=True)
+                                logger=TensorBoardLogger("./logs", name='Regressor', default_hp_metric=False, log_graph=True),
                                 )
         
 

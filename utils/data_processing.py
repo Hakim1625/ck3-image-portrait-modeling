@@ -4,10 +4,11 @@ import zipfile
 def load_img(path):
     return Image.open(path)
 
-from torchvision import transforms
 
-def transform(image):
-    return transforms.ToTensor()(image)/255
+
+def loader(path):
+    import utils.deepface as deepface   
+    return torch.tensor(deepface.face_features(path), dtype=torch.float32)
 
 import os
 import shutil 
@@ -18,6 +19,13 @@ def zip_processing(dataset_name):
             zip_ref.extractall('./')
     except:
         None
+
+def remove_empty_dirs(path):
+    for dir in os.listdir(path):
+        if len(os.listdir(f'{path}/{dir}')) <= 1:
+            shutil.rmtree(f'{path}/{dir}')
+
+
 
 
 def clean_dataset(path='C:/Users/hakim/Dropbox/CK3/Data'):
@@ -37,53 +45,57 @@ def get_dataset_paths(path, extension='jpg'):
 
     return imgs
 
+import torch
 
-def create_align_dataset(path, images):
-    import utils.deepface as deepface   
-
-    parameters = deepface.parameters
+def create_embedded_dataset(path, images, extension='pt'):
 
     if not os.path.exists(path):
             os.makedirs(path)
 
     for i, pair in enumerate(images):
         n, image = pair
-        newpath = f'{path}/portraits/{n}'
+        newpath = f'{path}/{n}'
         if not os.path.exists(newpath):
             os.makedirs(newpath)
 
         try:
-            deepface.face_detect_img(image, f'{newpath}/{i}.png', parameters['size'], parameters['backend'])
+            tensor = loader(image)
+            torch.save(tensor, f'{newpath}/{i}.{extension}')
         except:
             continue
 
-from utils.dna_parser import dna_to_array
-import torch
+def create_dna_dataset(path, dnas, extension='txt'):
 
-def save_tensors(data_path, output_path):
-    pairs = get_dataset_paths(data_path, extension='txt')
-    paths = [path for _, path in pairs]
+    if not os.path.exists(path):
+            os.makedirs(path)
 
-    if not os.path.exists(f'{output_path}/tensors'):
-            os.makedirs(f'{output_path}/tensors')
+    for i, pair in enumerate(dnas):
+        n, image = pair
+        newpath = f'{path}/{n}'
+        if not os.path.exists(newpath):
+            os.makedirs(newpath)
 
-    dnas = torch.stack([dna_to_array(path) for path in paths])
-    torch.save(dnas, f'./{output_path}/tensors/dnas.pt')
+        try:
+            os.rename(image, f'{newpath}/{i}.{extension}')
+        except:
+            continue
 
-    file = lambda path: open(path, "r").read()
-    get_gender = lambda file: torch.tensor([0, 1]) if 'female' in file else torch.tensor([1, 0])
-
-    genders = torch.stack([get_gender(file(path)) for path in paths])
-    torch.save(genders, f'./{output_path}/tensors/genders.pt')
+        
 
 
 def process_screenshot_dataset(input_path, output_path):
     clean_dataset(input_path)
 
     images = get_dataset_paths(input_path)
-    create_align_dataset(output_path, images)
+    create_embedded_dataset(output_path, images)
 
-    save_tensors(input_path, output_path)
+    dnas = get_dataset_paths(input_path, extension='txt')
+    create_dna_dataset(output_path, dnas)
+
+    remove_empty_dirs(output_path)
+
+
+
 
 
     
