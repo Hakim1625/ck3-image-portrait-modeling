@@ -84,7 +84,7 @@ class Regressor(LightningModule):
             res_block(1000, 1000),
             res_block(1000, 1000),
             res_block(1000, 1000),
-            nn.Linear(1000, 220),
+            nn.Linear(1000, 227),
             nn.Sigmoid()
         )
 
