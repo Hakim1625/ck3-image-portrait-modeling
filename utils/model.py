@@ -81,9 +81,10 @@ class Regressor(LightningModule):
         
         self.regressor = nn.Sequential(
             res_block(embeddings_size, 1000),
-            res_block(1000, 500),
-            res_block(500, 250),
-            nn.Linear(250, 220),
+            res_block(1000, 1000),
+            res_block(1000, 1000),
+            res_block(1000, 1000),
+            nn.Linear(1000, 220),
             nn.Sigmoid()
         )
 
