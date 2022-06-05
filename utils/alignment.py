@@ -5,7 +5,6 @@ import scipy
 import scipy.ndimage
 import dlib
 
-
 def get_landmark(filepath, predictor):
     """get landmark with dlib
     :return: np.array shape=(68, 2)
