@@ -1,8 +1,4 @@
-from tkinter import S
 from pytorch_lightning import LightningModule
-
-from torch import nn
-import torch
 
 from utils.regressor import Regressor
 from utils.extractor import ResNet50 as ResNet

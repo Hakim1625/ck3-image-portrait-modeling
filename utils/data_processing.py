@@ -42,7 +42,7 @@ class dataset_processor(ABC):
             files = os.listdir(sub_path)
 
             images = [f'{sub_path}/{path}' for path in files if (
-                imghdr.what(f'{sub_path}/{path}') in dataset_processor.extensions)]
+                path[-3:-1] in extensions)]
             dna = [f'{sub_path}/{path}' for path in files if '.txt' in path]
 
             paths.append({'dna': dna[0], 'images': images})
@@ -149,7 +149,7 @@ class torchvision_dataset_align(dataset_align):
         try:
             self.align_image(path).save(path)
         except BaseException:
-            pass
+            os.remove(path)
 
     @property
     def process_and_save(self):
