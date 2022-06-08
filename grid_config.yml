@@ -1,12 +1,9 @@
 compute:
-           # Cluster ID
 
-  # Training configuration.
   train:
     name: processing-job
-    instance: t2.xlarge           # AWS instance type
-    datastore_name: ck3-portraits          # Datastore name to use
-    datastore_version: 1       # Datastore version number
-    datastore_mount_dir: /datastores/ck3-portraits     # Where to mount the datastore
-    use_spot: false               # If we should use spot instances
-       # Path to the reqs or conda env
+    instance: t2.xlarge           
+    datastore_name: ck3-portraits       
+    datastore_version: 1      
+    datastore_mount_dir: /datastores/ck3-portraits    
+    use_spot: false           
