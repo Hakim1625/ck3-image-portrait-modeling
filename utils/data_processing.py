@@ -7,8 +7,8 @@ from abc import ABC, abstractmethod
 
 import os
 import shutil
-import imghdr
-
+from tqdm import tqdm
+from time import sleep
 import numpy as np
 
 import torch
@@ -17,7 +17,7 @@ from torchvision.datasets import ImageFolder
 
 
 class dataset_processor(ABC):
-    extensions = ['jpeg', 'jpg', 'png']
+    extensions = ['peg', 'jpg', 'png']
 
     def create_folder(self, path):
         if not os.path.exists(path):
@@ -42,7 +42,7 @@ class dataset_processor(ABC):
             files = os.listdir(sub_path)
 
             images = [f'{sub_path}/{path}' for path in files if (
-                path[-3:-1] in extensions)]
+                path[-3:] in self.__class__.extensions)]
             dna = [f'{sub_path}/{path}' for path in files if '.txt' in path]
 
             paths.append({'dna': dna[0], 'images': images})
@@ -144,12 +144,19 @@ class torchvision_dataset_align(dataset_align):
     def __post_init__(self):
         super().__post_init__()
         self.images = ImageFolder(root=self.directory, loader=self.image_loader)
+        self.pbar = tqdm(total=sum([len(dic['images']) for dic in self.paths]))
 
     def image_loader(self, path) -> torch.tensor:
         try:
             self.align_image(path).save(path)
         except BaseException:
             os.remove(path)
+        
+        os.system('cls' if os.name == 'nt' else 'clear')
+        self.pbar.update(1)
+        
+             
+        
 
     @property
     def process_and_save(self):
