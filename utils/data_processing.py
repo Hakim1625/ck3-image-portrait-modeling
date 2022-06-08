@@ -2,18 +2,17 @@
 import dlib
 from utils.alignment import align_face
 from dataclasses import dataclass, field
-from collections.abc import Sequence
 from abc import ABC, abstractmethod
 
+import re
 import os
 import shutil
 from tqdm import tqdm
-from time import sleep
 import numpy as np
 
 import torch
 from torch.utils.data import DataLoader
-from torchvision.datasets import ImageFolder
+from torchvision.datasets import ImageFolder, DatasetFolder
 
 
 class dataset_processor(ABC):
@@ -143,31 +142,60 @@ class torchvision_dataset_align(dataset_align):
 
     def __post_init__(self):
         super().__post_init__()
+
+        self.pbar = tqdm(total=sum([len(dic['images']) for dic in self.paths]))
+
         self.images = ImageFolder(
             root=self.directory,
             loader=self.image_loader)
-        self.pbar = tqdm(total=sum([len(dic['images']) for dic in self.paths]))
+
+        self.dnas = DatasetFolder(
+            root=self.directory,
+            loader=self.dna_loader,
+            extensions="txt"
+        )
 
     def image_loader(self, path) -> torch.tensor:
-        try:
-            self.align_image(path).save(path)
-        except BaseException:
-            os.remove(path)
+        newpath = path.replace(self.directory, f"{self.directory}_aligned")
+        file = re.findall(r'\d.[a-z]+', path)[0]
+        folder = newpath.replace(file, '')
 
-        os.system('cls' if os.name == 'nt' else 'clear')
+        try:
+            self.create_folder(folder)
+            self.align_image(path).save(newpath)
+        except BaseException:
+            pass
+
         self.pbar.update(1)
+
+    def dna_loader(self, path):
+        newpath = path.replace(self.directory, f"{self.directory}_aligned")
+        file = re.findall(r'\w+[.][a-z]+', path)[0]
+        print(file)
+        folder = newpath.replace(file, '')
+        self.create_folder(folder)
+        shutil.copy(path, newpath)
 
     @property
     def process_and_save(self):
 
-        processor = DataLoader(
+        image_processor = DataLoader(
             dataset=self.images,
             batch_size=len(self.images),
             num_workers=self.num_workers)
 
-        try:
-            next(iter(processor))
+        dna_processor = DataLoader(
+            dataset=self.dnas,
+            batch_size=len(self.dnas),
+            num_workers=1)
 
+        try:
+            next(iter(dna_processor))
+        except BaseException:
+            pass
+
+        try:
+            next(iter(image_processor))
         except BaseException:
             pass
 
