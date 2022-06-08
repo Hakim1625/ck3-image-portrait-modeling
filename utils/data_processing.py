@@ -143,7 +143,9 @@ class torchvision_dataset_align(dataset_align):
 
     def __post_init__(self):
         super().__post_init__()
-        self.images = ImageFolder(root=self.directory, loader=self.image_loader)
+        self.images = ImageFolder(
+            root=self.directory,
+            loader=self.image_loader)
         self.pbar = tqdm(total=sum([len(dic['images']) for dic in self.paths]))
 
     def image_loader(self, path) -> torch.tensor:
@@ -151,12 +153,9 @@ class torchvision_dataset_align(dataset_align):
             self.align_image(path).save(path)
         except BaseException:
             os.remove(path)
-        
+
         os.system('cls' if os.name == 'nt' else 'clear')
         self.pbar.update(1)
-        
-             
-        
 
     @property
     def process_and_save(self):
