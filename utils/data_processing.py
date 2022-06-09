@@ -172,6 +172,6 @@ class torchvision_dataset_align(dataset_align):
         self.pbar.close()
         print('Dataset aligned!')
 
-        shutil.make_archive('./', 'zip', self.directory)
+        shutil.make_archive(self.directory, 'zip', './')
         print('Datset compressed!')
 
