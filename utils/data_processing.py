@@ -2,9 +2,9 @@
 import dlib
 from utils.alignment import align_face
 from dataclasses import dataclass, field
+from collections.abc import Sequence
 from abc import ABC, abstractmethod
 
-import re
 import os
 import shutil
 from tqdm import tqdm
@@ -12,7 +12,7 @@ import numpy as np
 
 import torch
 from torch.utils.data import DataLoader
-from torchvision.datasets import ImageFolder, DatasetFolder
+from torchvision.datasets import ImageFolder
 
 
 class dataset_processor(ABC):
@@ -142,61 +142,36 @@ class torchvision_dataset_align(dataset_align):
 
     def __post_init__(self):
         super().__post_init__()
-
-        self.pbar = tqdm(total=sum([len(dic['images']) for dic in self.paths]))
-
         self.images = ImageFolder(
             root=self.directory,
             loader=self.image_loader)
-
-        self.dnas = DatasetFolder(
-            root=self.directory,
-            loader=self.dna_loader,
-            extensions="txt"
-        )
+        self.pbar = tqdm(total=sum([len(dic['images']) for dic in self.paths]))
 
     def image_loader(self, path) -> torch.tensor:
-        newpath = path.replace(self.directory, f"{self.directory}_aligned")
-        file = re.findall(r'\d.[a-z]+', path)[0]
-        folder = newpath.replace(file, '')
-
         try:
-            self.create_folder(folder)
-            self.align_image(path).save(newpath)
+            self.align_image(path).save(path)
         except BaseException:
-            pass
+            os.remove(path)
 
         self.pbar.update(1)
-
-    def dna_loader(self, path):
-        newpath = path.replace(self.directory, f"{self.directory}_aligned")
-        file = re.findall(r'\w+[.][a-z]+', path)[0]
-        print(file)
-        folder = newpath.replace(file, '')
-        self.create_folder(folder)
-        shutil.copy(path, newpath)
 
     @property
     def process_and_save(self):
 
-        image_processor = DataLoader(
+        processor = DataLoader(
             dataset=self.images,
             batch_size=len(self.images),
             num_workers=self.num_workers)
 
-        dna_processor = DataLoader(
-            dataset=self.dnas,
-            batch_size=len(self.dnas),
-            num_workers=1)
-
         try:
-            next(iter(dna_processor))
+            next(iter(processor))
+
         except BaseException:
             pass
 
-        try:
-            next(iter(image_processor))
-        except BaseException:
-            pass
-
+        self.pbar.close()
         print('Dataset aligned!')
+
+        shutil.make_archive('./', 'zip', self.directory)
+        print('Datset compressed!')
+
