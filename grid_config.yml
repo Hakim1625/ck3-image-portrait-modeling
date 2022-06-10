@@ -1,8 +1,7 @@
 compute:
 
   train:
-    name: processing-job
-    instance: t2.xlarge           
+    instance: t2.large           
     datastore_name: ck3-portraits       
     datastore_version: 1      
     datastore_mount_dir: /datastores/ck3-portraits    
