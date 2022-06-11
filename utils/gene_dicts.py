@@ -2,7 +2,7 @@ import json
 
 genes = {
 
-'gender': ['male', 'female'],
+'gender': ['male', 'female', 'boy', 'girl'],
 'age': ['age'],
 
 'gene_chin_forward': ['chin_forward_neg', 'chin_forward_pos'],
