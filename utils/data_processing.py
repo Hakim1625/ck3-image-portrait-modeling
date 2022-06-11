@@ -172,5 +172,3 @@ class torchvision_dataset_align(dataset_align):
         self.pbar.close()
         print('Dataset aligned!')
 
-
-
