@@ -3,7 +3,7 @@ import zipfile
 
 
 try:
-    with zipfile.ZipFile('~/datastores/ck3-portraits-aligned/portraits.zip', 'r') as zip_ref:
+    with zipfile.ZipFile('~/datastores/ck3-portraits/portraits.zip', 'r') as zip_ref:
         zip_ref.extractall('./')
 except:
     pass
