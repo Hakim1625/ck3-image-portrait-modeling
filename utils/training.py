@@ -93,7 +93,13 @@ class Net(LightningModule):
         self.logger.log_metrics({'validation loss': avg_loss}, self.current_epoch)
     
         self.scheduler.step(avg_loss)
-   
+
+    def predict_step(self, batch, batch_idx: int):
+        images = batch
+        predictions = self.model(images)
+
+        return torch.clip(predictions, min=0, max=255).int()
+        
     def configure_optimizers(self):
         self.optimizer = torch.optim.RMSprop(self.model.parameters(), lr = self.learning_rate)
         self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, 'min', patience=2, factor=0.90, threshold_mode='abs', threshold=6)
@@ -142,7 +148,7 @@ class experiment():
         self.model = Net(model)
         self.model.get_parameters(self.parameters)
 
-        self.datamodule = datamodule(opts)
+      
 
         self.stop = EarlyStopping(monitor='val_loss', patience=6, strict=False, mode='min', min_delta=6)
         
@@ -155,7 +161,11 @@ class experiment():
         
 
     def fit(self):
+        self.datamodule = datamodule(opts)
         self.trainer.fit(self.model, self.datamodule)
+
+    def predict(self, datamodule, path):
+        return self.trainer.predict(self.model, datamodule, ckpt_path=path)
 
 
 if __name__ == '__main__':
