@@ -128,6 +128,8 @@ class datamodule(LightningDataModule):
 
 class experiment():
     def __init__(self, model, opts):
+
+        self.opts = opts
         self.parameters = { 'batch size': opts.batch_size,
                             'epochs': opts.epochs,
                             'lr': opts.lr,
@@ -151,7 +153,7 @@ class experiment():
         
 
     def fit(self):
-        self.datamodule = datamodule(opts)
+        self.datamodule = datamodule(self.opts)
         self.trainer.fit(self.model, self.datamodule)
 
     def predict(self, datamodule, path):

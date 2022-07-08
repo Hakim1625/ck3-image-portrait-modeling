@@ -12,6 +12,7 @@ class mask_rcnn(LightningModule):
 
     def forward(self, batch):
         with torch.no_grad():
+            self.model.eval()
             masks = self.model(batch)
             masks_batch = [mask.get('masks')[0][0] for mask in masks]
             return torch.stack(masks_batch)
@@ -26,8 +27,9 @@ class model(LightningModule):
         self.regressor = Regressor(input_size = in_features, output_size = out_features)
 
     def forward(self, x):
-        y = self.mask(x.clone(x))
-        x = torch.stack((x, y), dim=1)
+        y = self.mask(x.clone())
+        y = torch.unsqueeze(y, dim=1)
+        x = torch.hstack((x, y))
 
         x = self.extractor(x)
         x = self.regressor(x)
