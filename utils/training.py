@@ -16,10 +16,6 @@ from torchvision.transforms import PILToTensor
 
 
 # In[ ]:
-def get_lr(optimizer):
-    for param_group in optimizer.param_groups:
-        return param_group['lr']
-
 class dataset(Dataset):
     def __init__(self, dataset_path):
         self.images = datasets.ImageFolder(root=f'./{dataset_path}/', transform=self.transform)
@@ -37,10 +33,6 @@ class dataset(Dataset):
     def __len__(self):
         return self.n_samples
 
-
-# In[ ]:
-
-
 class Net(LightningModule):
 
     def __init__(self, model):
@@ -56,8 +48,6 @@ class Net(LightningModule):
         self.epochs = hyperparameters['epochs']
         self.learning_rate = hyperparameters['lr']
         self.weight_decay = hyperparameters['weight decay']
-
-        
 
     def mse(self, x, y):
         return  F.mse_loss(x, y)
